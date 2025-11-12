@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Quieres Arruncharte Conmigo?</title>
+    <style>
+        /* Estilos generales para centrar el contenido y el fondo */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        /* Estilo para la pregunta */
+        h1 {
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        /* Contenedor de los botones */
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            position: relative; /* Necesario para posicionar el botón 'No' */
+        }
+
+        /* Estilos comunes para los botones */
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease; /* Transición suave para todos los cambios */
+            font-size: 16px;
+        }
+
+        /* Estilo para el botón 'Sí' (crece) */
+        #yesBtn {
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            min-width: 150px;
+            transition: transform 0.5s ease-out; /* Transición para el crecimiento */
+        }
+
+        /* Estilo para el botón 'No' (se mueve) */
+        #noBtn {
+            background-color: #f44336; /* Rojo */
+            color: white;
+            position: absolute; /* Permite moverlo libremente */
+            left: 50%;
+            transform: translateX(-50%);
+            /* Asegura que el botón "Sí" ocupe su espacio inicial */
+        }
+
+        /* Estilo para la segunda pantalla */
+        .second-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 2px 2px 4px #000000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Estilo para el texto en la segunda pantalla */
+        .second-screen h2 {
+            font-size: 3em;
+            margin: 0;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para el texto */
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mainScreen">
+        <h1>¿Quieres arruncharte conmigo? 🤗</h1>
+        <div class="buttons-container">
+            <button id="yesBtn" onclick="accept()">Sí ❤️</button>
+
+            <button id="noBtn" onclick="reject()" onmouseover="moveButton(this)">No 💔</button>
+        </div>
+    </div>
+
+    <div id="confirmScreen" class="second-screen">
+        <h2 id="confirmationText"></h2>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const mainScreen = document.getElementById('mainScreen');
+        const confirmScreen = document.getElementById('confirmScreen');
+
+        let yesFontSize = 16; // Tamaño de fuente inicial
+
+        // --- Función para el botón 'No' (Rechazar) ---
+        function reject() {
+            // Aumenta el tamaño de la fuente y padding del botón "Sí"
+            yesFontSize += 5; // Aumenta el tamaño de la fuente en 5px
+            yesBtn.style.fontSize = `${yesFontSize}px`;
+
+            // Aumenta el tamaño del botón "Sí" usando el transform scale
+            // Usamos transform para que el crecimiento sea más suave y visible
+            let currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '').replace(')', '')) || 1;
+            yesBtn.style.transform = `scale(${currentScale + 0.2})`;
+
+            // Asegura que el botón 'No' se mueva después de ser clickeado
+            moveButton(noBtn);
+        }
+
+
+        // --- Función para mover el botón 'No' (cuando el mouse pasa por encima o se hace click) ---
+        function moveButton(button) {
+            // Define el rango de movimiento (ajustar según el diseño)
+            const maxOffset = 200; // Máximo desplazamiento desde el centro
+
+            // Genera una nueva posición aleatoria dentro del rango
+            const newX = Math.random() * maxOffset * 2 - maxOffset; // entre -200 y 200
+
+            // Ajusta la posición del botón 'No'
+            button.style.position = 'absolute';
+            button.style.left = `calc(50% + ${newX}px)`;
+            button.style.top = `${Math.random() * 50}px`; // Un pequeño movimiento vertical
+            button.style.transform = `translateX(-50%)`; // Mantiene el centrado horizontal
+        }
+
+        // --- Función para el botón 'Sí' (Aceptar) ---
+        function accept() {
+            // Oculta la pantalla principal
+            mainScreen.style.display = 'none';
+
+            // Prepara y muestra la pantalla de confirmación
+            // *** ¡AQUÍ ESTÁ EL CAMBIO! ***
+            confirmScreen.style.backgroundImage = 'url("img/pug.jpg")'; // RUTA DE LA IMAGEN LOCAL
+            document.getElementById('confirmationText').innerText = "¡Yo sabía que dirías que Sí a la primera! Nos vamos a arrunchar muy pronto. 🥰";
+
+            // Muestra la pantalla de confirmación
+            confirmScreen.style.display = 'flex';
+        }
+
+        // Ajusta la posición inicial del botón 'No' para que esté justo al lado del 'Sí'
+        document.addEventListener('DOMContentLoaded', () => {
+            // Espera a que el botón 'Sí' se renderice para obtener su ancho
+            const yesWidth = yesBtn.offsetWidth;
+
+            // Coloca el botón 'No' a la derecha del botón 'Sí'
+            noBtn.style.position = 'static'; // Temporalmente lo pone estático para calcular
+            const yesRight = yesBtn.getBoundingClientRect().right;
+            const containerLeft = document.querySelector('.buttons-container').getBoundingClientRect().left;
+
+            noBtn.style.position = 'absolute'; // Vuelve a la posición absoluta
+            noBtn.style.left = `${yesRight - containerLeft + 20}px`; // 20px de espacio
+            noBtn.style.top = '0';
+            noBtn.style.transform = 'none'; // Elimina el transform X para posicionamiento manual
+        });
+
+    </script>
+</body>
+</html>
